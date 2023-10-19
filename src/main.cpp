@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "subsystems/catapult.h"
+#include "subsystems/drivebase.h"
 
 enum class AutonModes
 {
@@ -11,12 +12,9 @@ enum class AutonModes
 	NONE,
 };
 
-static std::shared_ptr<OdomChassisController> chassis;
-static std::shared_ptr<AsyncMotionProfileController> chassisProfileController;
 static AutonModes selectedAuton = AutonModes::NONE;
-static std::shared_ptr<Catapult> catapult;
-
-static void wind_back_arm();
+static std::unique_ptr<Drivebase> drivebase;
+static std::unique_ptr<Catapult> catapult;
 
 static inline auto auton_mode_to_string(AutonModes mode) -> std::string
 {
@@ -71,31 +69,13 @@ void initialize()
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Comet Robotics VEX-U!");
 
-	MotorGroup mgroup_l{{constants::FL_PORT, constants::BL_PORT}};
-	MotorGroup mgroup_r{{constants::FR_PORT, constants::BR_PORT}};
-
-	mgroup_l.setReversed(constants::LEFT_REVERSED);
-	mgroup_r.setReversed(constants::RIGHT_REVERSED);
-
-	catapult = std::make_shared<Catapult>();
+	catapult = std::make_unique<Catapult>();
 	catapult->zero_position();
-
-	chassis =
-		ChassisControllerBuilder()
-			.withMotors(mgroup_l, mgroup_r)
-			.withDimensions(constants::CHASSIS_GEARSET, {constants::CHASSIS_DIMS, constants::CHASSIS_TPR})
-			.withOdometry()
-			.buildOdometry();
-
-	chassisProfileController =
-		AsyncMotionProfileControllerBuilder()
-			.withLimits(constants::PATH_LIMITS)
-			.withOutput(chassis)
-			.buildMotionProfileController();
+	drivebase = std::make_unique<Drivebase>();
 
 	for (const comets::path_plan &plan : constants::PATHS)
 	{
-		chassisProfileController->generatePath(plan.points, std::string(plan.name));
+		drivebase->generatePath(plan.points, std::string(plan.name));
 	}
 
 	pros::Task autonSelectorWatcher_task(autonSelectorWatcher);
@@ -139,18 +119,20 @@ void autonomous()
 	const auto mode_name = auton_mode_to_string(selectedAuton);
 	printf("Starting autonomous routine. (%s)\n", mode_name.c_str());
 
+	auto chassis = drivebase->get_chassis();
+
 	switch (selectedAuton)
 	{
 	case AutonModes::SQUARE:
 	{
 		double oldMaxVel = chassis->getMaxVelocity();
-		chassis->setMaxVelocity(125.0);		 // affects paths
-		chassis->driveToPoint({1_ft, 1_ft}); // assume starting position of {0, 0, 0} // TODO: figure out what this does
+		chassis->setMaxVelocity(125.0);		   // affects paths
+		drivebase->driveToPoint({1_ft, 1_ft}); // assume starting position of {0, 0, 0} // TODO: figure out what this does
 		for (int i = 0; i < 4; i++)
 		{
-			chassis->moveDistance(2_ft);
+			drivebase->moveDistance(2_ft);
 			printf("Finished driving for iter %d\n", i);
-			chassis->turnAngle(90_deg);
+			drivebase->turnAngle(90_deg);
 			printf("Finished turning for iter %d\n", i);
 		}
 		chassis->setMaxVelocity(oldMaxVel);
@@ -158,13 +140,13 @@ void autonomous()
 	break;
 	case AutonModes::PATHS:
 	{
-		chassisProfileController->setTarget("right_turn");
-		chassisProfileController->waitUntilSettled();
-		turnAngle(-90_deg);
-		chassisProfileController->setTarget("straight");
-		chassisProfileController->waitUntilSettled();
-		chassisProfileController->setTarget("strafe_right");
-		chassisProfileController->waitUntilSettled();
+		drivebase->setTarget("right_turn");
+		drivebase->waitUntilSettled();
+		drivebase->turnAngle(-90_deg);
+		drivebase->setTarget("straight");
+		drivebase->waitUntilSettled();
+		drivebase->setTarget("strafe_right");
+		drivebase->waitUntilSettled();
 	}
 	break;
 	case AutonModes::NONE:
@@ -195,27 +177,15 @@ void opcontrol()
 
 	while (true)
 	{
-		// pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		//                  (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		//                  (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
 		pros::lcd::print(0, "Battery: %f V / %f cap / %f temp", pros::battery::get_voltage() / 1000.0, pros::battery::get_capacity(), pros::battery::get_temperature());
 
-		const auto state = chassis->getState();
-		std::cout << state.x.convert(inch) << " " << state.y.convert(inch) << " " << state.theta.convert(degree) << "\n";
+		const auto state = drivebase->get_state();
+		std::printf("%0.2f %0.2f %0.2f\n", state.x.convert(inch), state.y.convert(inch), state.theta.convert(degree));
 
-		chassis->getModel()->arcade(
+		drivebase->arcade(
 			controller.getAnalog(ControllerAnalog::leftY),
 			controller.getAnalog(ControllerAnalog::rightX));
 
 		pros::delay(constants::TELEOP_POLL_TIME);
 	}
 }
-
-void turnAngle(okapi::QAngle angle)
-{
-	double oldMaxVel = chassis->getMaxVelocity();
-	chassis->setMaxVelocity(oldMaxVel * constants::TURN_VEL_MULT);
-	chassis->turnAngle(angle);
-	chassis->setMaxVelocity(oldMaxVel);
-}
-

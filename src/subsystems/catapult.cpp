@@ -34,7 +34,7 @@ void Catapult::release_arm()
     set_position(arm::STORED_POSITION);
 }
 
-bool Catapult::is_motor_idle()
+bool Catapult::is_motor_idle() noexcept
 {
     const double v_error = m_motor.getVelocityError();
     const double p_error = m_motor.getPositionError();
