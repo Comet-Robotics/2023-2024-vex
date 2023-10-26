@@ -9,9 +9,6 @@
 namespace constants
 {
     using namespace okapi;
-    inline constexpr auto CHASSIS_GEARSET = okapi::AbstractMotor::gearset::green;
-    inline constexpr auto CHASSIS_DIMS = {4_in, 12.5_in};
-    inline constexpr auto CHASSIS_TPR = okapi::imev5GreenTPR;
 
     inline constexpr okapi::PathfinderLimits PATH_LIMITS = {
         1.0 * 0.66, // Maximum linear velocity of the Chassis in m/s
@@ -25,8 +22,23 @@ namespace constants
         {.name = "strafe_right", .points = {{0_ft, 0_ft, 0_deg}, {0_ft, 2_ft, 0_deg}}},
     };
 
-    inline constexpr bool LEFT_REVERSED = false;
-    inline constexpr bool RIGHT_REVERSED = true;
+    namespace drivebase
+    {
+        inline constexpr std::array<int8_t, 3> LEFT_PORTS = {
+            1,
+            -2,
+            3,
+        };
+        inline constexpr std::array<int8_t, 3> RIGHT_PORTS = {
+            -6,
+            7,
+            -8,
+        };
+
+        inline constexpr auto CHASSIS_GEARSET = okapi::AbstractMotor::gearset::green;
+        inline constexpr auto CHASSIS_DIMS = {4_in, 12.5_in};
+        inline constexpr auto CHASSIS_TPR = okapi::imev5GreenTPR;
+    }
 
     inline constexpr int8_t FL_PORT = 20;
     inline constexpr int8_t FR_PORT = 11;

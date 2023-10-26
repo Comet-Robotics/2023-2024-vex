@@ -2,6 +2,7 @@
 #define __SUBSYSTEMS_DRIVEBASE_H__
 
 #include "comets/vendor.h"
+#include "constants.h"
 #include <memory>
 
 class Drivebase
