@@ -177,7 +177,7 @@ void opcontrol()
 
 	while (true)
 	{
-		pros::lcd::print(0, "Battery: %f V / %f cap / %f temp", pros::battery::get_voltage() / 1000.0, pros::battery::get_capacity(), pros::battery::get_temperature());
+		pros::lcd::print(0, "Battery: %2.3f V", pros::battery::get_voltage() / 1000.0f);
 
 		const auto state = drivebase->get_state();
 		std::printf("%0.2f %0.2f %0.2f\n", state.x.convert(inch), state.y.convert(inch), state.theta.convert(degree));
