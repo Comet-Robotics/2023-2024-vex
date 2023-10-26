@@ -40,11 +40,6 @@ namespace constants
         inline constexpr auto CHASSIS_TPR = okapi::imev5GreenTPR;
     }
 
-    inline constexpr int8_t FL_PORT = 20;
-    inline constexpr int8_t FR_PORT = 11;
-    inline constexpr int8_t BL_PORT = 10;
-    inline constexpr int8_t BR_PORT = 9;
-
     namespace catapult
     {
         inline constexpr int8_t PORT = 12;
