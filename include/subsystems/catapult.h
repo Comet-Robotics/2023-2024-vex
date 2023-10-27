@@ -14,15 +14,20 @@ public:
     Catapult();
 
     bool is_motor_idle() noexcept;
+    void wind_back();
+    void fire();
 
-    void zero_position();
+    double get_position();
 
-    void wind_arm();
-    void release_arm();
+    inline okapi::AbstractMotor &get_motor() noexcept
+    {
+        return m_motor;
+    }
 
 private:
     okapi::Motor m_motor;
 
+    void zero_position();
     void set_position(double position);
 };
 

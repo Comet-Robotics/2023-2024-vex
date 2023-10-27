@@ -70,7 +70,6 @@ void initialize()
 	pros::lcd::set_text(1, "Comet Robotics VEX-U!");
 
 	catapult = std::make_unique<Catapult>();
-	catapult->zero_position();
 	drivebase = std::make_unique<Drivebase>();
 
 	for (const comets::path_plan &plan : constants::PATHS)
@@ -112,10 +111,6 @@ void competition_initialize() {}
  */
 void autonomous()
 {
-	catapult->wind_arm();
-	pros::delay(2000);
-	catapult->release_arm();
-
 	const auto mode_name = auton_mode_to_string(selectedAuton);
 	printf("Starting autonomous routine. (%s)\n", mode_name.c_str());
 
@@ -178,6 +173,7 @@ void opcontrol()
 	while (true)
 	{
 		pros::lcd::print(0, "Battery: %2.3f V", pros::battery::get_voltage() / 1000.0f);
+		pros::lcd::print(1, "arm pos %2.3f deg", catapult->get_motor().getPosition());
 
 		const auto state = drivebase->get_state();
 		std::printf("%0.2f %0.2f %0.2f\n", state.x.convert(inch), state.y.convert(inch), state.theta.convert(degree));
@@ -193,6 +189,14 @@ void opcontrol()
 			drivebase->arcade(
 				controller.getAnalog(ControllerAnalog::leftY),
 				controller.getAnalog(ControllerAnalog::rightX));
+		}
+		if (controller.getDigital(ControllerDigital::R2))
+		{
+			catapult->fire();
+		}
+		if (controller.getDigital(ControllerDigital::R1))
+		{
+			catapult->wind_back();
 		}
 
 		pros::delay(constants::TELEOP_POLL_TIME);

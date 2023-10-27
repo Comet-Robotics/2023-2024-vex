@@ -43,7 +43,7 @@ namespace constants
 
     namespace catapult
     {
-        inline constexpr int8_t PORT = 12;
+        inline constexpr int8_t PORT = 21;
         inline constexpr bool REVERSED = false;
         inline constexpr auto POS_PIDF = comets::PIDF_Value{
             .P = 0.01,
@@ -58,7 +58,8 @@ namespace constants
             .F = 0.10};
 
         inline constexpr auto STORED_POSITION = 0.0;
-        inline constexpr auto EXTENDED_POSITION = 550.0;
+        inline constexpr auto EXTENDED_POSITION = 350.0;
+        inline constexpr auto MOTOR_GEARSET = okapi::AbstractMotor::gearset::green;
 
     } // namespace catapult
 

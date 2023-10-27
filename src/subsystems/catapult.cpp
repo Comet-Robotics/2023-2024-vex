@@ -9,11 +9,15 @@ static inline constexpr double IDLE_POSITION_ERROR_RANGE = 10.0;
 
 namespace arm = constants::catapult;
 
+static double get_next_nearest_position(double curr, double target);
+static double remap_360_to_ps180(double curr);
+
 Catapult::Catapult() : m_motor(arm::PORT)
 {
-    m_motor.setPosPID(arm::POS_PIDF.F, arm::POS_PIDF.P, arm::POS_PIDF.I, arm::POS_PIDF.D);
-    m_motor.setVelPID(arm::VEL_PIDF.F, arm::VEL_PIDF.P, arm::VEL_PIDF.I, arm::VEL_PIDF.D);
+    // m_motor.setPosPID(arm::POS_PIDF.F, arm::POS_PIDF.P, arm::POS_PIDF.I, arm::POS_PIDF.D);
+    // m_motor.setVelPID(arm::VEL_PIDF.F, arm::VEL_PIDF.P, arm::VEL_PIDF.I, arm::VEL_PIDF.D);
     m_motor.setReversed(arm::REVERSED);
+    m_motor.setEncoderUnits(okapi::AbstractMotor::encoderUnits::degrees);
     zero_position();
 }
 
@@ -22,16 +26,24 @@ void Catapult::zero_position()
     m_motor.tarePosition();
 }
 
-void Catapult::wind_arm()
+double Catapult::get_position()
 {
-    set_position(arm::EXTENDED_POSITION);
+    return m_motor.getPosition() / static_cast<double>(constants::catapult::MOTOR_GEARSET);
 }
 
-void Catapult::release_arm()
+void Catapult::wind_back()
 {
-    // although the code would suggest that the release is the same speed as winding
-    // but the real robot has elastic bands pulling it torwards the stored position.
-    set_position(arm::STORED_POSITION);
+    const auto curr_pos = get_position();
+    if (comets::in_range((fmod(get_position(), 360) - 180.0), -10, 10))
+    {
+        return;
+    }
+    m_motor.moveAbsolute(get_next_nearest_position(curr_pos, 0), 200);
+}
+
+void Catapult::fire()
+{
+    m_motor.moveRelative(360, 200);
 }
 
 bool Catapult::is_motor_idle() noexcept
@@ -49,4 +61,18 @@ bool Catapult::is_motor_idle() noexcept
 void Catapult::set_position(double position)
 {
     m_motor.moveAbsolute(position, 400);
+}
+
+static double get_next_nearest_position(double curr, double target)
+{
+    const double remainder = 360.0 - fmod(curr, 360.0);
+    const double next_zero = curr + remainder;
+    const double new_target = next_zero + target;
+    assert(new_target > target);
+    return new_target;
+}
+
+static double remap_360_to_ps180(double curr)
+{
+    return curr - 180.0;
 }
