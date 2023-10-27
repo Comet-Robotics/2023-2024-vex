@@ -182,9 +182,18 @@ void opcontrol()
 		const auto state = drivebase->get_state();
 		std::printf("%0.2f %0.2f %0.2f\n", state.x.convert(inch), state.y.convert(inch), state.theta.convert(degree));
 
-		drivebase->arcade(
-			controller.getAnalog(ControllerAnalog::leftY),
-			controller.getAnalog(ControllerAnalog::rightX));
+		if constexpr (constants::USE_TANK)
+		{
+			drivebase->tank(
+				controller.getAnalog(ControllerAnalog::leftY),
+				controller.getAnalog(ControllerAnalog::rightY));
+		}
+		else
+		{
+			drivebase->arcade(
+				controller.getAnalog(ControllerAnalog::leftY),
+				controller.getAnalog(ControllerAnalog::rightX));
+		}
 
 		pros::delay(constants::TELEOP_POLL_TIME);
 	}

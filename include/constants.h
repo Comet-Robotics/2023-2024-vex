@@ -9,6 +9,7 @@
 namespace constants
 {
     using namespace okapi;
+    inline constexpr bool USE_TANK = true;
 
     inline constexpr okapi::PathfinderLimits PATH_LIMITS = {
         1.0 * 0.66, // Maximum linear velocity of the Chassis in m/s

@@ -42,3 +42,7 @@ void Drivebase::arcade(double iforwardSpeed, double iyaw, double ithreshold)
 {
     chassis->getModel()->arcade(iforwardSpeed, iyaw, ithreshold);
 }
+void Drivebase::tank(double left, double right, double threshold)
+{
+    chassis->getModel()->tank(left, right, threshold);
+}

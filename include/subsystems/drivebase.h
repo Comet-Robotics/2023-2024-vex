@@ -12,6 +12,7 @@ public:
 
     void generatePath(std::initializer_list<okapi::PathfinderPoint> iwaypoints, const std::string &ipathId);
     void arcade(double iforwardSpeed, double iyaw, double ithreshold = 0);
+    void tank(double left, double right, double threshold = 0);
 
     inline auto get_state() noexcept
     {
