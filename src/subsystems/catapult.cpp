@@ -43,7 +43,13 @@ void Catapult::wind_back()
 
 void Catapult::fire()
 {
-    m_motor.moveRelative(360, 200);
+    //m_motor.moveRelative(360, 200);
+    m_motor.moveVelocity(70);
+}
+
+void Catapult::stop()
+{
+    m_motor.moveVelocity(0);
 }
 
 bool Catapult::is_motor_idle() noexcept

@@ -193,7 +193,9 @@ void opcontrol()
 		if (controller.getDigital(ControllerDigital::R2))
 		{
 			catapult->fire();
-		}
+		} else {
+			catapult->stop();
+        }
 		if (controller.getDigital(ControllerDigital::R1))
 		{
 			catapult->wind_back();

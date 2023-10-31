@@ -16,6 +16,7 @@ public:
     bool is_motor_idle() noexcept;
     void wind_back();
     void fire();
+    void stop();
 
     double get_position();
 
