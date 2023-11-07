@@ -19,6 +19,9 @@ Drivebase::Drivebase()
     static_assert(constants::drivebase::LEFT_PORTS.size() == 3 && constants::drivebase::RIGHT_PORTS.size() == 3,
                   "number of motors on drivebase has changed without consulting drivebase.cpp");
 
+    mgroup_l.setReversed(constants::drivebase::REVERSED);
+    mgroup_r.setReversed(constants::drivebase::REVERSED);
+
     chassis =
         okapi::ChassisControllerBuilder()
             .withMotors(mgroup_l, mgroup_r)

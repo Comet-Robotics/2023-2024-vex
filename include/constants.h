@@ -36,6 +36,7 @@ namespace constants
             -8,
         };
 
+        inline constexpr bool REVERSED = true;
         inline constexpr auto CHASSIS_GEARSET = okapi::AbstractMotor::gearset::green;
         inline constexpr auto CHASSIS_DIMS = {4_in, 12.5_in};
         inline constexpr auto CHASSIS_TPR = okapi::imev5GreenTPR;
