@@ -21,6 +21,8 @@ public:
     void zero_position();
     double get_position();
 
+    void periodic();
+
     inline okapi::AbstractMotor &get_motor() noexcept
     {
         return m_motor;
@@ -28,6 +30,8 @@ public:
 
 private:
     okapi::Motor m_motor;
+    std::pair<double, int16_t> targetPositionVelocity;
+    bool movingToPosition;
 
     void set_position(double position);
 };

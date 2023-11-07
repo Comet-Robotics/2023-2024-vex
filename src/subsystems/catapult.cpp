@@ -12,7 +12,7 @@ namespace arm = constants::catapult;
 static double get_next_nearest_position(double curr, double target);
 static double remap_360_to_ps180(double curr);
 
-Catapult::Catapult() : m_motor(arm::PORT)
+Catapult::Catapult() : m_motor(arm::PORT), targetPositionVelocity({0,0}), movingToPosition(false)
 {
     // m_motor.setPosPID(arm::POS_PIDF.F, arm::POS_PIDF.P, arm::POS_PIDF.I, arm::POS_PIDF.D);
     // m_motor.setVelPID(arm::VEL_PIDF.F, arm::VEL_PIDF.P, arm::VEL_PIDF.I, arm::VEL_PIDF.D);
@@ -36,21 +36,22 @@ void Catapult::wind_back()
     const auto curr_pos = get_position();
     if (comets::in_range((fmod(curr_pos, 360)), -arm::TOLERANCE, arm::TOLERANCE))
     {
-        std::printf("at zero.");
+        std::printf("catapult at zero.\n");
         return;
     }
 
     double nearestPosition = get_next_nearest_position(curr_pos, 0);
     std::printf("pos curr %f ; near %f\n", curr_pos, nearestPosition);
-    while ((nearestPosition+15) > get_position())
-        m_motor.moveVelocity(50);
-    std::printf("done winding.\n");
+    targetPositionVelocity = {nearestPosition + 15, 50};
+    movingToPosition = true;
+    // std::printf("done winding.\n");
 }
 
 void Catapult::fire()
 {
-    //m_motor.moveRelative(360, 200);
     m_motor.moveVelocity(80);
+    movingToPosition = true;
+    targetPositionVelocity = {get_next_nearest_position(get_position(), 80), 80};
 }
 
 void Catapult::stop()
@@ -75,12 +76,28 @@ void Catapult::set_position(double position)
     m_motor.moveAbsolute(position, 400);
 }
 
+void Catapult::periodic()
+{
+    if (movingToPosition)
+    {
+        if (targetPositionVelocity.first > get_position())
+        {
+            m_motor.moveVelocity(targetPositionVelocity.second);
+        }
+        else
+        {
+            m_motor.moveVelocity(0);
+            movingToPosition = false;
+            std::printf("done moving to position %f.\n", targetPositionVelocity.first);
+        }
+    }
+}
+
 static double get_next_nearest_position(double curr, double target)
 {
-    const double remainder = 360.0 - fmod(curr, 360.0);
-    const double next_zero = curr + remainder;
-    const double new_target = next_zero + target;
-    assert(new_target > target);
+    const double remainder = fmod((360.0 + target) - fmod(curr, 360.0), 360.0);
+    const double new_target = curr + remainder;
+    assert(new_target >= curr);
     return new_target;
 }
 

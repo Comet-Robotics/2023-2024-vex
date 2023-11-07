@@ -175,6 +175,8 @@ void opcontrol()
 		pros::lcd::print(0, "Battery: %2.3f V", pros::battery::get_voltage() / 1000.0f);
 		pros::lcd::print(1, "arm pos %2.3f deg", catapult->get_motor().getPosition());
 
+		catapult->periodic();
+
 		const auto state = drivebase->get_state();
 		// std::printf("%0.2f %0.2f %0.2f\n", state.x.convert(inch), state.y.convert(inch), state.theta.convert(degree));
 
@@ -193,9 +195,7 @@ void opcontrol()
 		if (controller.getDigital(ControllerDigital::R2))
 		{
 			catapult->fire();
-		} else {
-			catapult->stop();
-        }
+		}
 		if (controller.getDigital(ControllerDigital::R1))
 		{
 			catapult->wind_back();
