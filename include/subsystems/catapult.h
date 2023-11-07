@@ -18,6 +18,7 @@ public:
     void fire();
     void stop();
 
+    void zero_position();
     double get_position();
 
     inline okapi::AbstractMotor &get_motor() noexcept
@@ -28,7 +29,6 @@ public:
 private:
     okapi::Motor m_motor;
 
-    void zero_position();
     void set_position(double position);
 };
 

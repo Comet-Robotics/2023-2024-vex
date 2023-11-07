@@ -28,23 +28,29 @@ void Catapult::zero_position()
 
 double Catapult::get_position()
 {
-    return m_motor.getPosition() / static_cast<double>(constants::catapult::MOTOR_GEARSET);
+    return m_motor.getPosition(); // / static_cast<double>(constants::catapult::MOTOR_GEARSET);
 }
 
 void Catapult::wind_back()
 {
     const auto curr_pos = get_position();
-    if (comets::in_range((fmod(get_position(), 360) - 180.0), -10, 10))
+    if (comets::in_range((fmod(curr_pos, 360)), -arm::TOLERANCE, arm::TOLERANCE))
     {
+        std::printf("at zero.");
         return;
     }
-    m_motor.moveAbsolute(get_next_nearest_position(curr_pos, 0), 200);
+
+    double nearestPosition = get_next_nearest_position(curr_pos, 0);
+    std::printf("pos curr %f ; near %f\n", curr_pos, nearestPosition);
+    while ((nearestPosition+15) > get_position())
+        m_motor.moveVelocity(50);
+    std::printf("done winding.\n");
 }
 
 void Catapult::fire()
 {
     //m_motor.moveRelative(360, 200);
-    m_motor.moveVelocity(70);
+    m_motor.moveVelocity(80);
 }
 
 void Catapult::stop()

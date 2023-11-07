@@ -176,7 +176,7 @@ void opcontrol()
 		pros::lcd::print(1, "arm pos %2.3f deg", catapult->get_motor().getPosition());
 
 		const auto state = drivebase->get_state();
-		std::printf("%0.2f %0.2f %0.2f\n", state.x.convert(inch), state.y.convert(inch), state.theta.convert(degree));
+		// std::printf("%0.2f %0.2f %0.2f\n", state.x.convert(inch), state.y.convert(inch), state.theta.convert(degree));
 
 		if constexpr (constants::USE_TANK)
 		{
@@ -199,6 +199,10 @@ void opcontrol()
 		if (controller.getDigital(ControllerDigital::R1))
 		{
 			catapult->wind_back();
+		}
+		if (controller.getDigital(ControllerDigital::B))
+		{
+			catapult->zero_position();
 		}
 
 		pros::delay(constants::TELEOP_POLL_TIME);

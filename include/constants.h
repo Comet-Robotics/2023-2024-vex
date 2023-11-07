@@ -43,8 +43,9 @@ namespace constants
 
     namespace catapult
     {
-        inline constexpr int8_t PORT = 21;
+        inline constexpr int8_t PORT = 9;
         inline constexpr bool REVERSED = false;
+        inline constexpr double TOLERANCE = 7;
         inline constexpr auto POS_PIDF = comets::PIDF_Value{
             .P = 0.01,
             .I = 0.0,
