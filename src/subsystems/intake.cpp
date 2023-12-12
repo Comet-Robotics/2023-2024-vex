@@ -1,13 +1,15 @@
 #include "subsystems/intake.h"
 #include "comets/math.h"
 
-Intake::Intake() : m_motors({constants::intake::LEFT_PORT, constants::intake::RIGHT_PORT})
+using namespace constants::intake;
+
+Intake::Intake() : m_motors({LEFT_PORT, RIGHT_PORT})
 {
 }
 
 void Intake::start() noexcept
 {
-    m_motors.moveVelocity(static_cast<int>(constants::intake::MOTOR_GEARSET));
+    m_motors.moveVelocity(static_cast<int>(MOTOR_GEARSET));
 }
 
 void Intake::stop() noexcept
