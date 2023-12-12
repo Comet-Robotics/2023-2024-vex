@@ -63,6 +63,12 @@ namespace constants
         inline constexpr auto MOTOR_GEARSET = okapi::AbstractMotor::gearset::green;
 
     } // namespace catapult
+    namespace intake
+    {
+        inline constexpr int8_t LEFT_PORT = 0xDEAD; // ensure this is opposite direction from right
+        inline constexpr int8_t RIGHT_PORT = 20;
+        inline constexpr auto MOTOR_GEARSET = okapi::AbstractMotor::gearset::green;
+    }
 
     // Max velocity of auton, in RPM
     inline constexpr double TURN_VEL_MULT = 0.3;

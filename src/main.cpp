@@ -4,6 +4,7 @@
 
 #include "subsystems/catapult.h"
 #include "subsystems/drivebase.h"
+#include "subsystems/intake.h"
 
 enum class AutonModes
 {
@@ -15,6 +16,7 @@ enum class AutonModes
 static AutonModes selectedAuton = AutonModes::NONE;
 static std::unique_ptr<Drivebase> drivebase;
 static std::unique_ptr<Catapult> catapult;
+static std::unique_ptr<Intake> intake;
 
 static inline auto auton_mode_to_string(AutonModes mode) -> std::string
 {
@@ -71,6 +73,7 @@ void initialize()
 
 	catapult = std::make_unique<Catapult>();
 	drivebase = std::make_unique<Drivebase>();
+	intake = std::make_unique<Intake>();
 
 	for (const comets::path_plan &plan : constants::PATHS)
 	{
@@ -203,6 +206,14 @@ void opcontrol()
 		if (controller.getDigital(ControllerDigital::B))
 		{
 			catapult->zero_position();
+		}
+		if (controller.getDigital(ControllerDigital::X))
+		{
+			intake->start();
+		}
+		else
+		{
+			intake->stop();
 		}
 
 		pros::delay(constants::TELEOP_POLL_TIME);
