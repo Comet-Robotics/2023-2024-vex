@@ -209,7 +209,7 @@ void opcontrol()
 		}
 		if (controller.getDigital(ControllerDigital::X))
 		{
-			intake->start();
+			intake->forward();
 		}
 		else if (controller.getDigital(ControllerDigital::Y))
 		{

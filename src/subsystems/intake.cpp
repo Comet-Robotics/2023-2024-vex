@@ -3,33 +3,30 @@
 
 using namespace constants::intake;
 
-Intake::Intake() : m_motorsLeft({LEFT_PORT}), m_motorsRight({RIGHT_PORT})
+static constexpr auto SPEED = static_cast<int>(MOTOR_GEARSET);
+
+Intake::Intake() : m_motors({LEFT_PORT, RIGHT_PORT})
 {
+    static_assert(comets::signum(LEFT_PORT) != comets::signum(RIGHT_PORT),
+                  "Directions of motors must be opposite");
 }
 
-void Intake::setVelocity(int velocity) noexcept
+void Intake::forward() noexcept
 {
-    m_motorsLeft.moveVelocity(velocity);
-    m_motorsRight.moveVelocity(-velocity);
-}
-
-void Intake::start() noexcept
-{
-    setVelocity(static_cast<int>(MOTOR_GEARSET));
+    m_motors.moveVelocity(SPEED);
 }
 
 void Intake::reverse() noexcept
 {
-    setVelocity(-static_cast<int>(MOTOR_GEARSET));
+    m_motors.moveVelocity(-SPEED);
 }
 
 void Intake::stop() noexcept
 {
-    setVelocity(0);
+    m_motors.moveVelocity(0);
 }
 
 bool Intake::is_running() const noexcept
 {
-    // Assume left and right groups will both be set to zero if one is set to zero
-    return std::abs(m_motorsLeft.getTargetVelocity()) > 0;
+    return m_motors.getTargetVelocity() == 0;
 }

@@ -65,7 +65,7 @@ namespace constants
     } // namespace catapult
     namespace intake
     {
-        inline constexpr int8_t LEFT_PORT = 19; // ensure this is opposite direction from right
+        inline constexpr int8_t LEFT_PORT = -19;
         inline constexpr int8_t RIGHT_PORT = 20;
         inline constexpr auto MOTOR_GEARSET = okapi::AbstractMotor::gearset::green;
     }
