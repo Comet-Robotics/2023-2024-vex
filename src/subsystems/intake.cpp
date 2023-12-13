@@ -9,8 +9,8 @@ Intake::Intake() : m_motorsLeft({LEFT_PORT}), m_motorsRight({RIGHT_PORT})
 
 void Intake::setVelocity(int velocity) noexcept
 {
-    m_motorsLeft.moveVelocity(velocity);
-    m_motorsRight.moveVelocity(-velocity);
+    m_motorsLeft.moveVelocity(-velocity);
+    m_motorsRight.moveVelocity(velocity);
 }
 
 void Intake::start() noexcept

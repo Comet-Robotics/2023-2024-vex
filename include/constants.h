@@ -35,10 +35,12 @@ namespace constants
             2,
             -3,
         };
+        inline constexpr uint8_t IMU_PORT = 10;
 
-        inline constexpr auto CHASSIS_GEARSET = okapi::AbstractMotor::gearset::green;
-        inline constexpr auto CHASSIS_DIMS = {4_in, 12.5_in};
-        inline constexpr auto CHASSIS_TPR = okapi::imev5GreenTPR;
+        inline constexpr auto CHASSIS_GEARSET = okapi::AbstractMotor::gearset::blue;
+        inline constexpr auto EXTERNAL_GEAR_RATIO = (44.0 / 24.0);
+        inline constexpr auto CHASSIS_DIMS = {3.25_in, 11_in};
+        inline constexpr auto CHASSIS_TPR = okapi::imev5BlueTPR;
     }
 
     namespace catapult

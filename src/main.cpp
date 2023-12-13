@@ -10,10 +10,12 @@ enum class AutonModes
 {
 	SQUARE,
 	PATHS,
+	INTAKE,
+	STRAIGHT_TEST,
 	NONE,
 };
 
-static AutonModes selectedAuton = AutonModes::NONE;
+static AutonModes selectedAuton = AutonModes::PATHS;
 static std::unique_ptr<Drivebase> drivebase;
 static std::unique_ptr<Catapult> catapult;
 static std::unique_ptr<Intake> intake;
@@ -25,7 +27,11 @@ static inline auto auton_mode_to_string(AutonModes mode) -> std::string
 	case AutonModes::SQUARE:
 		return "square";
 	case AutonModes::PATHS:
-		return "square";
+		return "paths";
+	case AutonModes::INTAKE:
+		return "intake";
+	case AutonModes::STRAIGHT_TEST:
+		return "straight test";
 	case AutonModes::NONE:
 		return "none";
 	}
@@ -35,6 +41,8 @@ static inline auto auton_mode_to_string(AutonModes mode) -> std::string
 
 void autonSelectorWatcher()
 {
+	pros::lcd::print(2, "selected auton %s", auton_mode_to_string(selectedAuton));
+
 	// this can get mucky if two buttons are pressed at the same time. this does not matter tbh
 	const uint8_t buttons = pros::lcd::read_buttons();
 	if (buttons == 0)
@@ -124,8 +132,7 @@ void autonomous()
 	case AutonModes::SQUARE:
 	{
 		double oldMaxVel = chassis->getMaxVelocity();
-		chassis->setMaxVelocity(125.0);		   // affects paths
-		drivebase->driveToPoint({1_ft, 1_ft}); // assume starting position of {0, 0, 0} // TODO: figure out what this does
+		chassis->setMaxVelocity(125.0); // affects paths
 		for (int i = 0; i < 4; i++)
 		{
 			drivebase->moveDistance(2_ft);
@@ -140,11 +147,37 @@ void autonomous()
 	{
 		drivebase->setTarget("right_turn");
 		drivebase->waitUntilSettled();
+		printf("Finished big right turn\n");
 		drivebase->turnAngle(-90_deg);
+		printf("Finished left turn\n");
 		drivebase->setTarget("straight");
 		drivebase->waitUntilSettled();
+		printf("Finished straight path\n");
 		drivebase->setTarget("strafe_right");
 		drivebase->waitUntilSettled();
+	}
+	break;
+	case AutonModes::INTAKE:
+	{
+		intake->start();
+		drivebase->moveDistance(2_ft);
+		intake->stop();
+		pros::delay(1000);
+		intake->reverse();
+		pros::delay(2000);
+		intake->stop();
+	}
+	break;
+	case AutonModes::STRAIGHT_TEST:
+	{
+		printf("Testing moveDistance 3ft...\n");
+		drivebase->moveDistance(3_ft);
+		printf("Finished moveDistance 3ft.\n");
+		pros::delay(1000);
+		printf("Testing straight path 3ft...\n");
+		drivebase->setTarget("straight");
+		drivebase->waitUntilSettled();
+		printf("Finished straight path 3ft.\n");
 	}
 	break;
 	case AutonModes::NONE:

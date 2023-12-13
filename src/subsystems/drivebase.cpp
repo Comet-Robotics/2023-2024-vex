@@ -22,7 +22,7 @@ Drivebase::Drivebase()
     chassis =
         okapi::ChassisControllerBuilder()
             .withMotors(mgroup_l, mgroup_r)
-            .withDimensions(constants::drivebase::CHASSIS_GEARSET, {constants::drivebase::CHASSIS_DIMS, constants::drivebase::CHASSIS_TPR})
+            .withDimensions({constants::drivebase::CHASSIS_GEARSET, constants::drivebase::EXTERNAL_GEAR_RATIO}, {constants::drivebase::CHASSIS_DIMS, constants::drivebase::CHASSIS_TPR})
             .withOdometry()
             .buildOdometry();
 
@@ -31,6 +31,8 @@ Drivebase::Drivebase()
             .withLimits(constants::PATH_LIMITS)
             .withOutput(chassis)
             .buildMotionProfileController();
+
+    imu = std::make_shared<okapi::IMU>(constants::drivebase::IMU_PORT, okapi::IMUAxes::z);
 }
 
 void Drivebase::generatePath(std::initializer_list<okapi::PathfinderPoint> iwaypoints, const std::string &ipathId)
