@@ -211,6 +211,10 @@ void opcontrol()
 		{
 			intake->start();
 		}
+		else if (controller.getDigital(ControllerDigital::Y))
+		{
+			intake->reverse();
+		}
 		else
 		{
 			intake->stop();

@@ -10,12 +10,15 @@ class Intake
 public:
     Intake();
     void start() noexcept;
+    void reverse() noexcept;
     void stop() noexcept;
     bool is_running() const noexcept;
 
 private:
+    void setVelocity(int velocity) noexcept;
     // mutable to allow reading voltage in const scope
-    mutable okapi::MotorGroup m_motors;
+    mutable okapi::MotorGroup m_motorsLeft;
+    mutable okapi::MotorGroup m_motorsRight;
 };
 
 #endif
